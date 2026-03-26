@@ -1,0 +1,332 @@
+----How to create a Database: 
+CREATE DATABASE myDB;
+DROP DATABASE myDB;
+USE myDB;
+ALTER DATABASE myDB READ ONLY =1;   --enable read only mode
+ALTER DATABASE myDB READ ONLY =0;   --disable read only mode
+---------------------------------------------
+
+
+-------How to create Tables:---------------
+Create Table employees (
+    employee_id INT PRIMARY KEY, 
+    first_name VARCHAR(10),    -- (10) means 10 is the max length first_name can have
+    last_name VARCHAR(10), 
+    hourly_date DECIMAL(5, 2), --(5,2) means the hourly_pay can have a total of 5 digits of which 2 will be after the decimal place.
+    hire_date DATE, 
+    email VARCHAR(50) UNIQUE
+);
+-------------------------------------------
+
+SELECT * FROM employees;
+
+RENAME TABLE employees TO workers;
+
+--drop a table:
+DROP TABLE employees;
+
+--add a new column:
+ALTER TABLE employees 
+ADD phone_number VARCHAR(50);
+
+-- change the name of a column;
+ALTER TABLE employees 
+ALTER COLUMN phone_number TO email;
+
+--change the datatype of a column;
+ALTER TABLE employees 
+MODIFY COLUMN email VARHCAR(50);
+
+--move column:
+ALTER TABLE employees 
+MODIFY email VARHCAR(50) 
+AFTER last_name;
+
+--move column to the first position:
+ALTER TABLE employees 
+MODIFY email VARHCAR(50) 
+FIRST;
+
+----------------------------------------------------
+--populating the table
+INSERT INTO employees
+VALUES (1, "Kainat", "Nasir", 25.50, "2026-03-21"), 
+       ()
+       ();
+
+--to omit certain columns use: 
+INSERT INTO employees (col1, col2)
+VALUES (col1_value, col2_value); -- the remaining columns will have NULL
+
+UPDATE employees 
+SET hourly_pay = 25.0, hire_date = "2023-01-21", last_name = NULL
+WHERE first_name = "Seldon"; --if you don't add WHERE, the above values will be changed for all rows.
+
+DELETE FROM employees
+WHERE emp_id = 6;
+--(WHERE emp_id <=6, >=6, !=6, IS NULL, IS NOT NULL)
+-----------------------------------------------------
+
+
+--AUTOCOMMIT, ROLLBACK, COMMITT
+SET AUTCOMMIT  = OFF;
+
+COMMIT;        --safepoint
+Write any command here but it will not be applied until you write commit again. 
+So if you accidently delete a table, you can reverse it by typing: 
+
+ROLLBACK;   --this will revert the state to what it was at the last COMMIT command.
+
+To permanently apply changes, you can write COMMIT;
+--------------------------------------------------------
+
+how to get current date and time:
+
+INSERT INTO Employee VALUES 
+(1, "Kainat", "Nasir", 10.00, CURRENT_DATE())
+Similarly you can also write CURRENT_TIME() and NOW() for Datetime
+time = Hours-Minutes-Seconds
+datetime = Year-Month-Date Hours-Minutes-Seconds
+-------------------------------------------------------
+
+CONSTRAINTS: 
+1. UNIQUE 
+    i. Can be added when making a table e.g. 
+        CREATE TABLE Employee(
+            emp_id INT, 
+            name VARCHAR(50) UNIQUE
+        );
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        ADD CONSTRAINT unique_name UNIQUE(name),
+        ADD CONSTRAINT unique_email UNIQUE (email);
+
+2. CHECK
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            hourly_pay DECIMAL(5,2), 
+            CHECK(hourly_pay >= 10.00)
+            --you can also do CONSTRAINT chk_hourly_pay CHECK(hourly_pay >= 10.00) here
+        );
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        ADD CONSTRAINT chk_hourly_pay CHECK(hourly_pay >= 10.00);
+    
+3. PRIMARY KEY
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            emp_id INT PRIMARY KEY
+        );
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        ADD CONSTRAINT pk_employee PRIMARY KEY(emp_id);
+
+4. FOREIGN KEY 
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            emp_id INT,
+             FOREIGN KEY(emp_id) REFERENCES Workers(emp_id) ON DELETE SET NULL/CASCADE
+        );
+        -- On DElete set null --> sets the value of the foreign key to null if it is deleted from the original table
+        -- on delete cascade deletes the row from the child table which has the deleted value as foreign key
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        ADD CONSTRAINT fk_employee FOREIGN KEY(emp_id) REFERENCES Workers(emp_id) ON DELETE SET NULL/CASCADE;
+    iii. ALTER TABLE DROP FOREIGN KEY fk_employee
+
+3. NOT NULL
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            emp_id INT NOT NULL
+        );
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        MODIFY emp_id INT NOT NULL,
+        MODIY first_name VARCHAR(50) NOT NULL;
+
+4. DEFAULT
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            hourly_pay DECIMAL (5,2) DEFAULT 0
+        );
+    ii. Can be added after making a table e.g. 
+        ALTER TABLE Employee 
+        ALTER hourly_pay SET DEFAULT 0;
+
+
+7. AUTO_INCREMENT/IDENTITY
+    i. Can be added when making a table e.g.
+        CREAT TABLE Employee(
+            emp_id INT PRIMARY KEY AUTO_INCREMEMT; 
+            -- or we can even do
+            emp_od INT PRIMARY KEY AUTO_INCREMENT = 1000; --this will start the values from 1000
+        );
+
+------------------------------------------------
+
+JOINS: 
+SELECT * 
+FROM transactions t INNER JOIN CUSTOMERS c ON t.cust_id = c.cust_id
+WHERE 
+
+------------------------------------------------
+
+SELECT COUNT(amount) AS "total transactions"
+FROM transactions
+
+COUNT(amount)
+MAX(amount)
+MIN(amount)
+AVG(amount)
+SUM(amount)
+CONCAT(first_name, " ", last_name) AS full_name
+--------------------------------------------------
+
+--NOT CLAUSEEE
+SELECT * 
+FROM employees
+WHERE NOT job = "manager" AND NOT job = "chef";
+
+--BETWEEN
+SELECT * 
+FROM employees
+WHERE NOT hourly_pay BETWEEN 10.00 AND 20.00;
+
+SELECT * FROM Employee
+WHERE job IN ("cook", "cashier", "janitor")
+
+--WILDCARDS
+1. %: 
+    SELECT * 
+    FROM Employees
+    WHERE first_name LIKE "s%";  --this means anything that starts from s
+    WHERE last_name LIKE "%r"; --this means anything that ends with the letter r.
+    --WHERE hire_date LIKE "2023%";
+2. _
+    SELECT * 
+    FROM Employees
+    WHERE first_name LIKE "_ook";  --this means anything that has ook after the first letter
+
+    SELECT (first_name, last_name) as full_name
+    FROM Employees
+    WHERE hire_date LIKE "____-01-__";  --this means anyone who was hired in the first month
+    --Another possibility: WHERE Month(hire_date) = 1;
+
+
+--ORDER BY: 
+SELECT * From Employee
+ORDER BY last_name -- Asc by default, add DESC after last_name to order in descending order.
+
+You can also add another column to this: 
+SELECT * FROM Employee
+ORDER BY last_name, emp_id --it will now order by the last name first but if 2 rows have the same values, it will order by emp_id
+
+SELECT * FRom employee
+LIMIT 1         -- will return the first row it finds, can be different each time you run the query even if you don't chnage the calues in the database.
+----------------------------------------------------------
+
+INDEXES: 
+Indexes are used to find values within a specific column more quickly
+SHOW INDEXES FROM Employees;
+
+CREATE INDEX last_name_idx
+ON Employees(first_name);
+--The following query will be sped up now
+SELECT * FROM Employee
+WHERE last_name = "King";
+
+
+CREATE INDEX last_name_idx
+ON Employees(first_name, last_name);
+THis would be useful when you're searching for a particular first_name or a particular (first_name and last_name)
+But it would not be useful is you're just looking for a last_name
+
+--ROLLUP
+--this adds a new row displaying the grand total of the aggregare function
+SELECT SUM(amount), order_date
+from transactions
+GROUP BY order_date WITH ROLLUP;
+
+
+--create a view
+CREATE VIEW employee_basic AS
+SELECT first_name, last_name, hourly_pay
+FROM Employees;
+
+--use: 
+SELECT * FROM employee_basic;
+
+----------------------------------------------------------------------
+1. Simple 
+    --stored procedure:
+    DELIMITER $$
+
+    CREATE PROCEDURE get_all_employees()
+    BEGIN
+        SELECT * FROM Employees;
+    END $$
+
+    DELIMITER ;
+
+2. With params: 
+    CREATE PROCEDURE get_employee(IN emp INT)
+    BEGIN
+        SELECT * 
+        FROM Employees
+        WHERE emp_id = emp;
+    END $$
+
+    DELIMITER ;
+
+CALL get_all_employees();
+
+
+
+DELIMITER $$
+CREATE PROCEDURE employee_salary(
+    IN emp INT,
+    OUT pay DECIMAL(5,2)
+)
+BEGIN
+    SELECT hourly_pay INTO pay
+    FROM Employees
+    WHERE emp_id = emp;
+END $$
+DELIMITER ;
+----------------------------
+SET @emp = 3
+CALL employee_salary(@emp, @salary);
+
+SELECT @salary;
+
+--There is also INOUT variables
+
+-------------------------------------------------------------------------
+
+-- OFFSET: 
+Skips the first n rows of the result if you write OFFSET n
+For example: 
+--QUERY the third highest Salary 
+SELECT salary FROM Employees
+ORDER BY salary DESC
+LIMIT 1 OFFSET 2
+
+SELECT t.content, t.created_at, u.username
+FROM tweets j JOIN users u on t.userid = u.userid
+WHERE t.userid in (
+    SELECT followerid 
+    FROM followers
+    WHERE followeeid = ""
+)
+ORDER BY t.created_at DESC
+LIMIT 50 
+
+
+SELECT salesperson, revenue, RANK() OVER (ORDER BY revenue DESC) AS rank 
+FROM sales; 
+
+SELECT salesperson, revenue, DENSE_RANK() OVER (ORDER BY revenue DESC) AS rank 
+FROM sales; 
+
+SELECT salesperson, revenue, ROW_NUMBER() OVER (ORDER BY revenue DESC) AS rank 
+FROM sales;
