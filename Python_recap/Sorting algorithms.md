@@ -22,7 +22,7 @@ def bubble_sort(self, arr):
 ---
 
 # Insertion Sort
-
+## Code
 ```python
 def insertion_sort(arr): 
     n = len(arr)
@@ -43,8 +43,29 @@ print(insertion_sort(arr))
 
 ---  
 
-# Merge Sort (Divide and Conquer)
+# Selection Sort
+## Code
+```python
+def selection_sort(arr): 
+    '''You start from index 0, find the minimum character in the array and swap it with 0'''
+    min_index = 0       # This will store the index where we found the min_value
 
+    for i in range(len(arr)): 
+        min_index = i
+        for  j in range(i, len(arr)): 
+            if arr[j] < min_index: 
+                min_index = j
+            
+        arr[i], arr[min_index] = arr[min_index], arr[i]
+    return arr
+```
+**Time Complexity**: O(n²)  
+**Space Complexity**: O(1)  
+
+---
+
+# Merge Sort (Divide and Conquer)
+## Code
 ```python
 def merge_sorted_array(right, left):
     i = j = 0
